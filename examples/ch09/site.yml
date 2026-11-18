@@ -1,0 +1,122 @@
+---
+- name: Preflight checks
+  hosts: all
+  tasks:
+    - name: Refuse to run on hosts this project doesn't support
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == 'Debian'
+          - ansible_facts['memtotal_mb'] >= 256
+          - http_port is not defined or (http_port | int > 0 and http_port | int < 65536)
+        fail_msg: "{{ inventory_hostname }} is not a host this project supports"
+        quiet: true
+
+- name: Every server
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Login message
+      ansible.builtin.template:
+        src: templates/motd.j2
+        dest: /etc/motd
+        mode: "0644"
+
+    - name: Every server knows every other
+      ansible.builtin.template:
+        src: templates/lab-hosts.j2
+        dest: /etc/lab-hosts
+        mode: "0644"
+
+- name: Web servers
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        update_cache: true
+        cache_valid_time: 3600
+      tags: packages
+
+    - name: Site configuration
+      ansible.builtin.template:
+        src: templates/site.conf.j2
+        dest: /etc/nginx/sites-available/default
+        mode: "0644"
+      notify: Reload nginx
+      tags: config
+
+    - name: Home page
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: "{{ web_root }}/index.html"
+        mode: "0644"
+      tags: content
+
+    - name: A sudo rule for the deploy group, only if visudo accepts it
+      ansible.builtin.copy:
+        content: "%deploy ALL=(root) NOPASSWD: /usr/sbin/service nginx *\n"
+        dest: /etc/sudoers.d/deploy
+        mode: "0440"
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: Hide the nginx version in error pages
+      ansible.builtin.lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^\s*#?\s*server_tokens'
+        line: '        server_tokens off;'
+      notify: Reload nginx
+      tags: config
+
+    - name: Start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+      tags: always
+
+    - name: Apply any configuration change now, before testing
+      ansible.builtin.meta: flush_handlers
+
+    - name: Wait until the site answers
+      ansible.builtin.uri:
+        url: "http://{{ inventory_hostname }}:{{ http_port }}/"
+      register: page
+      until: page.status == 200
+      retries: 5
+      delay: 2
+      delegate_to: localhost
+      become: false
+      tags: always
+
+  handlers:
+    - name: Check the nginx configuration
+      ansible.builtin.command: nginx -t
+      changed_when: false
+      listen: Reload nginx
+
+    - name: Reload nginx for real
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      listen: Reload nginx
+
+- name: Database server
+  hosts: db
+  become: true
+
+  tags: db
+  tasks:
+    - name: Install SQLite
+      ansible.builtin.apt:
+        name: sqlite3
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Make the data folder
+      ansible.builtin.file:
+        path: "{{ data_dir }}"
+        state: directory
+        owner: student
+        mode: "0750"

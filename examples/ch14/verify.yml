@@ -1,0 +1,73 @@
+---
+- name: Gather facts
+  hosts: all
+  tasks: []
+
+- name: From outside (control)
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: The site works through the load balancer
+      ansible.builtin.uri:
+        url: http://lb/
+        return_content: true
+      register: site
+      failed_when: "'Northwind Orders' not in site.content"
+
+    - name: The API answers through the load balancer and a web server
+      ansible.builtin.uri:
+        url: http://lb/api/orders
+        return_content: true
+      register: api
+      failed_when: api.json.orders != 42
+
+    - name: The web servers can't be reached directly
+      ansible.builtin.wait_for:
+        host: "{{ item }}"
+        port: 80
+        timeout: 3
+      loop: "{{ groups['web'] }}"
+      register: direct
+      ignore_errors: true
+
+    - name: The API can't be reached directly
+      ansible.builtin.wait_for:
+        host: api1
+        port: 8080
+        timeout: 3
+      register: api_direct
+      ignore_errors: true
+
+    - name: Password logins are refused
+      ansible.builtin.shell: "SSHPASS=student sshpass -e ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no student@web1 true"
+      register: password_login
+      changed_when: false
+      failed_when: false
+
+    - name: Verdict, from outside
+      ansible.builtin.assert:
+        that:
+          - direct.results | selectattr('failed') | list | length == groups['web'] | length
+          - api_direct is failed
+          - password_login.rc != 0
+        success_msg: "OK: only the load balancer is reachable, and SSH takes keys only"
+
+- name: From the web servers
+  hosts: web
+  gather_facts: false
+  tasks:
+    - name: The API answers the web servers
+      ansible.builtin.uri:
+        url: http://api1:8080/orders
+
+- name: From the load balancer
+  hosts: loadbalancers
+  gather_facts: false
+  tasks:
+    - name: The API does not answer the load balancer
+      ansible.builtin.wait_for:
+        host: api1
+        port: 8080
+        timeout: 3
+      register: lb_api
+      failed_when: lb_api is succeeded

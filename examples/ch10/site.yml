@@ -1,0 +1,18 @@
+---
+- name: Every server
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Web servers
+  hosts: web
+  become: true
+  roles:
+    - webserver
+
+- name: Database servers
+  hosts: db
+  become: true
+  roles:
+    - database

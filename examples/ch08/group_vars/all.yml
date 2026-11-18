@@ -1,0 +1,17 @@
+company: Northwind
+admin_email: ops@northwind.lab
+ntp_server: pool.ntp.org
+role_description: a server
+team:
+  - name: alice
+    comment: Alice Admin
+    groups: [sudo]
+  - name: bob
+    comment: Bob Webdev
+    only_on: web
+  - name: carol
+    comment: Carol DBA
+    only_on: db
+  - name: dave
+    comment: Dave (left the company)
+    state: absent

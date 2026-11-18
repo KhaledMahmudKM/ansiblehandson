@@ -1,0 +1,3 @@
+---
+database_data_dir: /srv/data
+database_owner: student

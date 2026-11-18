@@ -1,0 +1,12 @@
+---
+- name: What are these servers?
+  hosts: all
+  tasks:
+    - name: Describe each host from its facts
+      ansible.builtin.debug:
+        msg: >-
+          {{ inventory_hostname }} runs {{ ansible_facts['distribution'] }}
+          {{ ansible_facts['distribution_version'] }} with
+          {{ ansible_facts['processor_vcpus'] }} CPUs and
+          {{ ansible_facts['memtotal_mb'] }} MB, at
+          {{ ansible_facts['eth0']['ipv4']['address'] }}

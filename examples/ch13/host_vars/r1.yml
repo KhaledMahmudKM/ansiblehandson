@@ -1,0 +1,5 @@
+---
+router_id: 1.1.1.1
+ospf_interfaces:
+  - { name: eth1, address: 10.0.12.1/24, peer: r2 }
+  - { name: eth2, address: 10.0.13.1/24, peer: r3 }

@@ -1,0 +1,4 @@
+---
+firewall_admin_source: 10.0.0.10/32      # control
+firewall_open_ports: []                   # ports anyone may reach: [80, 443]
+firewall_allow: []                        # ports some hosts may reach: [{port: 80, hosts: [lb]}]

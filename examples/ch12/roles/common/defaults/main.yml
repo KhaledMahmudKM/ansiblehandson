@@ -1,0 +1,4 @@
+---
+common_company: Northwind
+common_role_description: server
+common_packages: [curl, tree, less]

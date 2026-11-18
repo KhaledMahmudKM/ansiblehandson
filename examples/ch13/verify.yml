@@ -1,0 +1,36 @@
+---
+- name: Is the network converged?
+  hosts: routers
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Ask FRR for the OSPF neighbours, as JSON
+      ansible.builtin.command: vtysh -c 'show ip ospf neighbor json'
+      register: ospf
+      changed_when: false
+      until: >-
+        (ospf.stdout | from_json).neighbors | dict2items
+        | map(attribute='value') | flatten
+        | selectattr('converged', 'defined') | selectattr('converged', 'eq', 'Full')
+        | list | length == ospf_interfaces | length
+      retries: 12
+      delay: 5
+
+    - name: Every router reaches every other router's loopback
+      ansible.builtin.command: "ping -c 1 -W 2 -I {{ router_id }} {{ hostvars[item]['router_id'] }}"
+      loop: "{{ groups['routers'] | difference([inventory_hostname]) }}"
+      register: ping
+      until: ping.rc == 0
+      retries: 5
+      delay: 2
+      changed_when: false
+
+    - name: Show the routes OSPF learned
+      ansible.builtin.command: vtysh -c 'show ip route ospf'
+      register: routes
+      changed_when: false
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "{{ routes.stdout_lines | select('search', '^O>') | list }}"

@@ -1,0 +1,19 @@
+---
+- name: Every server
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Web servers
+  hosts: web
+  become: true
+  roles:
+    - webserver
+    - appconfig
+
+- name: Database servers
+  hosts: db
+  become: true
+  roles:
+    - database

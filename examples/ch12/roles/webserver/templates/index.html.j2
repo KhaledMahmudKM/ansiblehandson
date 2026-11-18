@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><title>{{ webserver_site_name }}</title></head>
+<body>
+<h1>{{ webserver_site_name }}</h1>
+<p class="version">version {{ webserver_app_version }}</p>
+<h2>Opening hours</h2>
+<ul>
+{% for day, hours in webserver_opening_hours.items() %}
+  <li>{{ day }}: {{ hours }}</li>
+{% endfor %}
+</ul>
+<p>Served by {{ inventory_hostname }} ({{ ansible_facts['eth0']['ipv4']['address'] }}).</p>
+</body></html>

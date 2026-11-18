@@ -1,0 +1,3 @@
+---
+webserver_site_name: Northwind Coffee (staging)
+webserver_port: 8080

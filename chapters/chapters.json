@@ -1,0 +1,33 @@
+[
+  {
+    "separator": "Part I · Foundations"
+  },
+  "01-how-ansible-works.md",
+  "02-first-contact.md",
+  "03-modules.md",
+  "04-inventory.md",
+  {
+    "separator": "Part II · Playbooks"
+  },
+  "05-playbooks.md",
+  "06-variables-facts.md",
+  "07-templates.md",
+  "08-conditions-loops-errors.md",
+  "09-handlers-tags.md",
+  {
+    "separator": "Part III · Reuse and Security"
+  },
+  "10-roles.md",
+  "11-vault.md",
+  {
+    "separator": "Part IV · Orchestration"
+  },
+  "12-rolling-updates.md",
+  "13-network-automation.md",
+  "14-final-project.md",
+  {
+    "separator": "Appendix"
+  },
+  "15-reference.md",
+  "glossary.md"
+]

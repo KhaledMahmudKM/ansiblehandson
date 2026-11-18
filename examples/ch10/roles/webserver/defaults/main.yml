@@ -1,0 +1,6 @@
+---
+webserver_port: 80
+webserver_root: /var/www/html
+webserver_site_name: Welcome
+webserver_aliases: []
+webserver_opening_hours: {}

@@ -1,0 +1,17 @@
+---
+- name: Use what a task returns
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: How full is the root file system?
+      ansible.builtin.command: df --output=pcent /
+      register: disk
+      changed_when: false
+
+    - name: Turn the output into a number
+      ansible.builtin.set_fact:
+        disk_used: "{{ disk.stdout_lines[1] | trim | replace('%', '') | int }}"
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: root is {{ disk_used }}% full (rc={{ disk.rc }})"

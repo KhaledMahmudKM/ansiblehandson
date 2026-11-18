@@ -1,0 +1,8 @@
+==============================================================
+ {{ inventory_hostname | upper }}: {{ common_company }} {{ common_role_description }}
+ {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}, {{ ansible_facts['processor_vcpus'] }} CPUs, {{ (ansible_facts['memtotal_mb'] / 1024) | round(1) }} GB
+{% if 'web' in group_names %}
+ Web site: http://{{ inventory_hostname }}:{{ webserver_port | default(80) }}/
+{% endif %}
+ Managed by Ansible: changes made by hand will be lost.
+==============================================================

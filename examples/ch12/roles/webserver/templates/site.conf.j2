@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+server {
+    listen {{ webserver_port }} default_server;
+    server_name {{ inventory_hostname }}{% for alias in webserver_aliases %} {{ alias }}{% endfor %};
+    root {{ webserver_root }};
+    index index.html;
+    location = /health { return 200 "OK {{ inventory_hostname }}\n"; }
+}

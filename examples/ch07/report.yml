@@ -1,0 +1,11 @@
+---
+- name: Report on the fleet
+  hosts: all
+  tasks:
+    - name: Write the report on control
+      ansible.builtin.template:
+        src: templates/report.md.j2
+        dest: "{{ playbook_dir }}/fleet-report.md"
+        mode: "0644"
+      delegate_to: localhost
+      run_once: true

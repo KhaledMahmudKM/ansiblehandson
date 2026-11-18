@@ -1,0 +1,40 @@
+---
+- name: FRR routers running OSPF
+  hosts: routers
+  become: true
+
+  tasks:
+    - name: Install FRR
+      ansible.builtin.apt:
+        name: frr
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Turn on the routing daemons this network uses
+      ansible.builtin.lineinfile:
+        path: /etc/frr/daemons
+        regexp: "^{{ item }}="
+        line: "{{ item }}=yes"
+      loop: "{{ frr_daemons }}"
+      notify: Restart FRR
+
+    - name: Routing configuration, checked by FRR before use
+      ansible.builtin.template:
+        src: templates/frr.conf.j2
+        dest: /etc/frr/frr.conf
+        owner: frr
+        group: frr
+        mode: "0640"
+        validate: /usr/bin/vtysh --dryrun --inputfile %s
+      notify: Restart FRR
+
+    - name: Start FRR
+      ansible.builtin.service:
+        name: frr
+        state: started
+
+  handlers:
+    - name: Restart FRR
+      ansible.builtin.service:
+        name: frr
+        state: restarted

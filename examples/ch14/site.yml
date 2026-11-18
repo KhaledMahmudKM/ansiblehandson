@@ -1,0 +1,26 @@
+---
+- name: Security baseline, on every server
+  hosts: all
+  become: true
+  roles:
+    - common
+    - hardening
+    - firewall
+
+- name: API
+  hosts: api
+  become: true
+  roles:
+    - api
+
+- name: Web servers
+  hosts: web
+  become: true
+  roles:
+    - webserver
+
+- name: Load balancer
+  hosts: loadbalancers
+  become: true
+  roles:
+    - loadbalancer

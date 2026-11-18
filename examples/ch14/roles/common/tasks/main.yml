@@ -1,0 +1,31 @@
+---
+- name: Baseline packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: The admin account
+  ansible.builtin.user:
+    name: "{{ common_admin }}"
+    groups: [sudo]
+    append: true
+    shell: /bin/bash
+
+- name: The admin's SSH key
+  ansible.posix.authorized_key:
+    user: "{{ common_admin }}"
+    key: "{{ common_admin_key }}"
+
+- name: Passwordless sudo for the admin (keys are the only way in)
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/{{ common_admin }}
+    content: "{{ common_admin }} ALL=(ALL) NOPASSWD: ALL\n"
+    mode: "0440"
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Login banner
+  ansible.builtin.copy:
+    dest: /etc/motd
+    content: |
+      {{ inventory_hostname }}: {{ group_names | join(', ') }} server. Managed by Ansible; authorised use only.

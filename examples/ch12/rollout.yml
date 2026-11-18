@@ -1,0 +1,55 @@
+---
+- name: Roll out a new version, one web server at a time
+  hosts: web
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+
+  pre_tasks:
+    - name: Take the server out of the load balancer
+      ansible.builtin.copy:
+        dest: /etc/nginx/backends/{{ inventory_hostname }}.conf
+        content: "server {{ inventory_hostname }}:80 down;\n"
+        mode: "0644"
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['loadbalancers'] }}"
+
+    - name: Apply that on the load balancer
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['loadbalancers'] }}"
+
+  tasks:
+    - name: Deploy the new version
+      ansible.builtin.template:
+        src: roles/webserver/templates/index.html.j2
+        dest: /var/www/html/index.html
+        mode: "0644"
+
+    - name: Check the server before users see it
+      ansible.builtin.uri:
+        url: "http://{{ inventory_hostname }}/health"
+      register: health
+      until: health.status == 200
+      retries: 5
+      delay: 2
+      delegate_to: localhost
+      become: false
+
+  post_tasks:
+    - name: Put it back in the load balancer
+      ansible.builtin.copy:
+        dest: /etc/nginx/backends/{{ inventory_hostname }}.conf
+        content: "server {{ inventory_hostname }}:80;\n"
+        mode: "0644"
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['loadbalancers'] }}"
+
+    - name: Apply that on the load balancer
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['loadbalancers'] }}"

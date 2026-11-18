@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+server {
+    listen {{ api_port }};
+    default_type application/json;
+    location = /orders { return 200 '{"orders": 42, "served_by": "{{ inventory_hostname }}"}'; }
+    location / { return 404 '{"error": "no such endpoint"}'; }
+}

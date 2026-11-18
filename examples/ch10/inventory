@@ -1,0 +1,20 @@
+# Northwind's servers, by job
+[web]
+web1
+web2
+
+[db]
+db1 ansible_host=10.0.0.21
+
+# ... and by environment
+[production]
+web1
+db1
+
+[staging]
+web2
+
+# every Linux server, whatever its job
+[linux:children]
+web
+db

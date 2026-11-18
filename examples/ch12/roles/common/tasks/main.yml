@@ -1,0 +1,26 @@
+---
+- name: Refuse hosts this role doesn't support
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] == 'Debian'
+      - ansible_facts['memtotal_mb'] >= 256
+    fail_msg: "{{ inventory_hostname }} is not a supported host"
+    quiet: true
+
+- name: Baseline packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Login message
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: "0644"
+
+- name: Every server knows every other
+  ansible.builtin.template:
+    src: lab-hosts.j2
+    dest: /etc/lab-hosts
+    mode: "0644"

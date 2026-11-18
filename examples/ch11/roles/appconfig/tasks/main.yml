@@ -1,0 +1,22 @@
+---
+- name: Folder for the application's settings
+  ansible.builtin.file:
+    path: /etc/{{ appconfig_name }}
+    state: directory
+    owner: root
+    mode: "0750"
+
+- name: Settings, with the secrets in them
+  ansible.builtin.template:
+    src: app.conf.j2
+    dest: /etc/{{ appconfig_name }}/app.conf
+    owner: root
+    mode: "0600"
+  no_log: true
+
+- name: An admin account with a password from the vault
+  ansible.builtin.user:
+    name: "{{ appconfig_admin_user }}"
+    shell: /bin/bash
+    password: "{{ appconfig_admin_password | password_hash('sha512', appconfig_admin_salt) }}"
+  no_log: true

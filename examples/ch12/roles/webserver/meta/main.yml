@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: Northwind operations
+  description: nginx serving one site
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions: [all]
+dependencies: []

@@ -1,0 +1,15 @@
+---
+- name: Gather facts from every host
+  hosts: all
+  tasks: []
+
+- name: What does each web server know about the others?
+  hosts: web
+  gather_facts: false
+  tasks:
+    - name: Magic variables
+      ansible.builtin.debug:
+        msg:
+          - "I am {{ inventory_hostname }}, in {{ group_names | join(', ') }}"
+          - "The web servers are {{ groups['web'] | join(' and ') }}"
+          - "The database is at {{ hostvars['db1']['ansible_facts']['eth0']['ipv4']['address'] }}"

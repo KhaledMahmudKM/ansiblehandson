@@ -1,0 +1,54 @@
+---
+- name: Web servers
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Configure the site (IPv4 only)
+      ansible.builtin.copy:
+        dest: /etc/nginx/sites-available/default
+        content: |
+          server {
+              listen {{ http_port }} default_server;
+              root {{ web_root }};
+              index index.html;
+              server_name _;
+          }
+        mode: "0644"
+
+    - name: Put the home page in place
+      ansible.builtin.copy:
+        dest: "{{ web_root }}/index.html"
+        content: "<h1>{{ site_name }}</h1><p>Served by {{ inventory_hostname }}</p>\n"
+        mode: "0644"
+
+    - name: Start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+
+- name: Database server
+  hosts: db
+  become: true
+
+  tasks:
+    - name: Install SQLite
+      ansible.builtin.apt:
+        name: sqlite3
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Make the data folder
+      ansible.builtin.file:
+        path: "{{ data_dir }}"
+        state: directory
+        owner: student
+        mode: "0750"

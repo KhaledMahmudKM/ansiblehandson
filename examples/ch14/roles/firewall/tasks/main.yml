@@ -1,0 +1,62 @@
+---
+- name: Allow loopback
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: lo
+    jump: ACCEPT
+
+- name: Allow replies to connections this host made
+  ansible.builtin.iptables:
+    chain: INPUT
+    ctstate: [ESTABLISHED, RELATED]
+    jump: ACCEPT
+
+- name: Allow ping
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: icmp
+    icmp_type: echo-request
+    jump: ACCEPT
+
+- name: Allow SSH from the admin network only
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "22"
+    source: "{{ firewall_admin_source }}"
+    jump: ACCEPT
+    comment: admin SSH
+
+- name: Know the addresses of the hosts in the rules, even with --limit
+  ansible.builtin.setup:
+    gather_subset: [network]
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ firewall_allow | map(attribute='hosts') | flatten | unique }}"
+  when: hostvars[item]['ansible_facts']['eth0'] is not defined
+
+- name: Open the ports anyone may reach
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ item }}"
+    jump: ACCEPT
+    comment: "open to all"
+  loop: "{{ firewall_open_ports }}"
+
+- name: Allow the ports some hosts may reach, from each host's address
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ item.0.port }}"
+    source: "{{ hostvars[item.1]['ansible_facts']['eth0']['ipv4']['address'] }}"
+    jump: ACCEPT
+    comment: "from {{ item.1 }}"
+  loop: "{{ firewall_allow | subelements('hosts') }}"
+  loop_control:
+    label: "{{ item.0.port }} from {{ item.1 }}"
+
+- name: Drop everything else (last, once the allow rules are in)
+  ansible.builtin.iptables:
+    chain: INPUT
+    policy: DROP

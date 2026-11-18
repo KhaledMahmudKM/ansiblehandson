@@ -1,0 +1,174 @@
+{
+ "name": "ansible-13-frr-ospf",
+ "description": "Northwind's three sites are linked by routers. Configure them **with Ansible**, from data: install FRRouting (FRR), generate each router's configuration from a template, and let the routers learn their routes with **OSPF**. Then prove the network works with a verification playbook. This lab goes with Chapter 13 of the *Concise Book on Ansible, Hands-on Edition*.\n\n| Container | Management (eth0) | Links | Loopback |\n|---|---|---|---|\n| control | `10.0.0.10` | | |\n| r1 | `10.0.0.101` | eth1 `10.0.12.1/24` to r2, eth2 `10.0.13.1/24` to r3 | `1.1.1.1/32` |\n| r2 | `10.0.0.102` | eth1 `10.0.12.2/24` to r1, eth2 `10.0.23.2/24` to r3 | `2.2.2.2/32` |\n| r3 | `10.0.0.103` | eth1 `10.0.23.3/24` to r2, eth2 `10.0.13.3/24` to r1 | `3.3.3.3/32` |\n\n## Before you start\n- The routers are the Ansible labs' managed nodes (`dockerlab/ansible-node`: Debian 13, Python 3, SSH) with *router* on (IP forwarding) and *privileged* on (FRR's zebra changes kernel settings). FRR is not installed: the playbook installs it.\n- `eth0` is the **management network**, shared with control. OSPF must never run on it, so a routing mistake can't cut off Ansible.\n- You're **student** everywhere (password `student`); on the routers, sudo needs no password.\n\n## 1. Keys and the project\n\n```\nsetup-keys r1 r2 r3\nfor h in 10.0.0.101 10.0.0.102 10.0.0.103; do ssh-keyscan -t ed25519 $h >> ~/.ssh/known_hosts 2>/dev/null; done\ngit clone https://github.com/khaledmahmudkm/ansiblehandson /tmp/book\ncp -r /tmp/book/examples/ch13 ~/northwind-net && cd ~/northwind-net\nansible routers -m ping\n```\n\n(Without internet access, type the files from Chapter 13 instead.)\n\n## 2. Configure, twice\n\n```\nansible-playbook routers.yml\nansible-playbook routers.yml\n```\n\nThe second run reports `changed=0`.\n\n## 3. Verify\n\n```\nansible-playbook verify.yml\n```\n\nIt waits for every OSPF neighbour to be **Full**, pings every loopback from every router, and shows the routes OSPF learned.\n\n## 4. Break a link\n\n```\nansible r1 -b -a 'ip link set eth1 down'\nsleep 45; ansible r1 -b -a \"vtysh -c 'show ip route 2.2.2.2'\"\nansible-playbook verify.yml\nansible r1 -b -a 'ip link set eth1 up'\n```\n\nThe route to 2.2.2.2 moves to r3; `verify.yml` reports r1's missing neighbour until the link is back.\n\n## Questions\n- [ ] Why is OSPF kept off `eth0`?\n- [ ] What does `validate: /usr/bin/vtysh --dryrun --inputfile %s` protect against?\n- [ ] Where does `verify.yml` get the number of neighbours to expect?\n",
+ "nodes": [
+  {
+   "id": "control",
+   "name": "control",
+   "image": "dockerlab/ansible-control:latest",
+   "x": 330,
+   "y": 40,
+   "command": "",
+   "ports": [],
+   "volumes": [],
+   "env": [],
+   "internet": true,
+   "router": false,
+   "privileged": false,
+   "interfaces": 0,
+   "ifname_first": "",
+   "nat_ifname": "",
+   "set_addresses": true,
+   "startup": ""
+  },
+  {
+   "id": "r1",
+   "name": "r1",
+   "image": "dockerlab/ansible-node:latest",
+   "x": 90,
+   "y": 330,
+   "command": "",
+   "ports": [],
+   "volumes": [],
+   "env": [],
+   "internet": true,
+   "router": true,
+   "privileged": true,
+   "interfaces": 0,
+   "ifname_first": "",
+   "nat_ifname": "",
+   "set_addresses": true,
+   "startup": "ssh-keygen -A > /dev/null && service ssh start"
+  },
+  {
+   "id": "r2",
+   "name": "r2",
+   "image": "dockerlab/ansible-node:latest",
+   "x": 570,
+   "y": 330,
+   "command": "",
+   "ports": [],
+   "volumes": [],
+   "env": [],
+   "internet": true,
+   "router": true,
+   "privileged": true,
+   "interfaces": 0,
+   "ifname_first": "",
+   "nat_ifname": "",
+   "set_addresses": true,
+   "startup": "ssh-keygen -A > /dev/null && service ssh start"
+  },
+  {
+   "id": "r3",
+   "name": "r3",
+   "image": "dockerlab/ansible-node:latest",
+   "x": 330,
+   "y": 560,
+   "command": "",
+   "ports": [],
+   "volumes": [],
+   "env": [],
+   "internet": true,
+   "router": true,
+   "privileged": true,
+   "interfaces": 0,
+   "ifname_first": "",
+   "nat_ifname": "",
+   "set_addresses": true,
+   "startup": "ssh-keygen -A > /dev/null && service ssh start"
+  }
+ ],
+ "switches": [
+  {
+   "id": "mgmt",
+   "name": "mgmt",
+   "x": 330,
+   "y": 190,
+   "subnet": "10.0.0.0/24"
+  }
+ ],
+ "links": [
+  {
+   "id": "c-control-mgmt",
+   "source": "control",
+   "target": "mgmt",
+   "subnet": "",
+   "source_ip": "10.0.0.10",
+   "target_ip": ""
+  },
+  {
+   "id": "c-r1-mgmt",
+   "source": "r1",
+   "target": "mgmt",
+   "subnet": "",
+   "source_ip": "10.0.0.101",
+   "target_ip": ""
+  },
+  {
+   "id": "c-r2-mgmt",
+   "source": "r2",
+   "target": "mgmt",
+   "subnet": "",
+   "source_ip": "10.0.0.102",
+   "target_ip": ""
+  },
+  {
+   "id": "c-r3-mgmt",
+   "source": "r3",
+   "target": "mgmt",
+   "subnet": "",
+   "source_ip": "10.0.0.103",
+   "target_ip": ""
+  },
+  {
+   "id": "c-r1-r2",
+   "source": "r1",
+   "target": "r2",
+   "subnet": "10.0.12.0/24",
+   "source_ip": "10.0.12.1",
+   "target_ip": "10.0.12.2"
+  },
+  {
+   "id": "c-r2-r3",
+   "source": "r2",
+   "target": "r3",
+   "subnet": "10.0.23.0/24",
+   "source_ip": "10.0.23.2",
+   "target_ip": "10.0.23.3"
+  },
+  {
+   "id": "c-r3-r1",
+   "source": "r3",
+   "target": "r1",
+   "subnet": "10.0.13.0/24",
+   "source_ip": "10.0.13.3",
+   "target_ip": "10.0.13.1"
+  }
+ ],
+ "notes": [],
+ "images": {
+  "dockerlab/ansible-control:latest": "FROM debian:13\n\n# The control node of the Ansible labs: Debian 13 with Ansible (and its collections), ansible-lint,\n# an SSH client and sshpass, and editors set up for YAML. User student (password student) may use sudo.\nRUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \\\n      ansible ansible-lint python3 python3-passlib openssh-client sshpass sudo git tree jq less nano vim-tiny \\\n      curl ca-certificates iproute2 iputils-ping dnsutils procps bash-completion man-db manpages \\\n && rm -rf /var/lib/apt/lists/*\n\nCOPY setup.sh /tmp/setup.sh\nRUN bash /tmp/setup.sh && rm /tmp/setup.sh\n\nUSER student\n# Ansible 2.19 warns on every host about the Python it picks: keep that quiet, whatever ansible.cfg says\nENV USER=student LOGNAME=student ANSIBLE_PYTHON_INTERPRETER=auto_silent\nWORKDIR /home/student\nCMD [\"bash\"]\n",
+  "dockerlab/ansible-node:latest": "FROM debian:13\n\n# A server for the Ansible labs to manage: Debian 13 with what Ansible needs on a managed node,\n# Python 3 and an SSH server, and little else (the labs install the rest with Ansible).\n# User student (password student) may use sudo without a password, as automation accounts often do.\nRUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \\\n      python3 python3-apt openssh-server sudo iproute2 iputils-ping procps less nano curl ca-certificates \\\n && rm -rf /var/lib/apt/lists/* \\\n && touch -d 2000-01-01 /var/lib/apt/lists    # the lists are gone: tell Ansible's cache_valid_time so\n\nCOPY setup.sh /tmp/setup.sh\nRUN bash /tmp/setup.sh && rm /tmp/setup.sh\n\nUSER student\nENV USER=student LOGNAME=student\nWORKDIR /home/student\nCMD [\"bash\"]\n"
+ },
+ "builds": {
+  "dockerlab/ansible-control:latest": {
+   "context": "ansible-control",
+   "dockerfile": "Dockerfile",
+   "args": {},
+   "target": ""
+  },
+  "dockerlab/ansible-node:latest": {
+   "context": "ansible-node",
+   "dockerfile": "Dockerfile",
+   "args": {},
+   "target": ""
+  }
+ },
+ "files": {
+  "ansible-control/Dockerfile": "RlJPTSBkZWJpYW46MTMKCiMgVGhlIGNvbnRyb2wgbm9kZSBvZiB0aGUgQW5zaWJsZSBsYWJzOiBEZWJpYW4gMTMgd2l0aCBBbnNpYmxlIChhbmQgaXRzIGNvbGxlY3Rpb25zKSwgYW5zaWJsZS1saW50LAojIGFuIFNTSCBjbGllbnQgYW5kIHNzaHBhc3MsIGFuZCBlZGl0b3JzIHNldCB1cCBmb3IgWUFNTC4gVXNlciBzdHVkZW50IChwYXNzd29yZCBzdHVkZW50KSBtYXkgdXNlIHN1ZG8uClJVTiBhcHQtZ2V0IHVwZGF0ZSAmJiBERUJJQU5fRlJPTlRFTkQ9bm9uaW50ZXJhY3RpdmUgYXB0LWdldCBpbnN0YWxsIC15IC0tbm8taW5zdGFsbC1yZWNvbW1lbmRzIFwKICAgICAgYW5zaWJsZSBhbnNpYmxlLWxpbnQgcHl0aG9uMyBweXRob24zLXBhc3NsaWIgb3BlbnNzaC1jbGllbnQgc3NocGFzcyBzdWRvIGdpdCB0cmVlIGpxIGxlc3MgbmFubyB2aW0tdGlueSBcCiAgICAgIGN1cmwgY2EtY2VydGlmaWNhdGVzIGlwcm91dGUyIGlwdXRpbHMtcGluZyBkbnN1dGlscyBwcm9jcHMgYmFzaC1jb21wbGV0aW9uIG1hbi1kYiBtYW5wYWdlcyBcCiAmJiBybSAtcmYgL3Zhci9saWIvYXB0L2xpc3RzLyoKCkNPUFkgc2V0dXAuc2ggL3RtcC9zZXR1cC5zaApSVU4gYmFzaCAvdG1wL3NldHVwLnNoICYmIHJtIC90bXAvc2V0dXAuc2gKClVTRVIgc3R1ZGVudAojIEFuc2libGUgMi4xOSB3YXJucyBvbiBldmVyeSBob3N0IGFib3V0IHRoZSBQeXRob24gaXQgcGlja3M6IGtlZXAgdGhhdCBxdWlldCwgd2hhdGV2ZXIgYW5zaWJsZS5jZmcgc2F5cwpFTlYgVVNFUj1zdHVkZW50IExPR05BTUU9c3R1ZGVudCBBTlNJQkxFX1BZVEhPTl9JTlRFUlBSRVRFUj1hdXRvX3NpbGVudApXT1JLRElSIC9ob21lL3N0dWRlbnQKQ01EIFsiYmFzaCJdCg==",
+  "ansible-control/setup.sh": "IyEvYmluL2Jhc2gKIyBUaGUgY29udHJvbCBub2RlJ3MgdXNlciwgZWRpdG9yIHNldHRpbmdzIGZvciBZQU1MLCBhbmQgc2V0dXAta2V5cywgd2hpY2ggZ2l2ZXMgc3R1ZGVudCBrZXkKIyBsb2dpbiB0byB0aGUgbGFiJ3Mgc2VydmVycyAodGhlIGZpcnN0IGxhYiBkb2VzIHRoZSBzYW1lIGJ5IGhhbmQpLgpzZXQgLWV1byBwaXBlZmFpbAppZCB1YnVudHUgPi9kZXYvbnVsbCAyPiYxICYmIHVzZXJkZWwgLXIgdWJ1bnR1IDI+L2Rldi9udWxsIHx8IHRydWUKdXNlcmFkZCAtbSAtcyAvYmluL2Jhc2ggLXUgMTAwMCAtYyAiU3R1ZGVudCIgc3R1ZGVudAplY2hvIHN0dWRlbnQ6c3R1ZGVudCB8IGNocGFzc3dkCnVzZXJtb2QgLWFHIHN1ZG8gc3R1ZGVudAplY2hvICd1bWFzayAwMjInID4+IC9ldGMvYmFzaC5iYXNocmMKCiMgWUFNTCBpcyBpbmRlbnRlZCB3aXRoIHNwYWNlczogbWFrZSBUYWIgaW5zZXJ0IHR3byBvZiB0aGVtCmNhdCA+IC9ob21lL3N0dWRlbnQvLm5hbm9yYyA8PCdFT0YnCnNldCB0YWJzaXplIDIKc2V0IHRhYnN0b3NwYWNlcwpzZXQgYXV0b2luZGVudApzZXQgbGluZW51bWJlcnMKRU9GCmNhdCA+IC9ob21lL3N0dWRlbnQvLnZpbXJjIDw8J0VPRicKc2V0IGV4cGFuZHRhYiB0YWJzdG9wPTIgc2hpZnR3aWR0aD0yIGF1dG9pbmRlbnQgbnVtYmVyCkVPRgpjaG93biBzdHVkZW50OnN0dWRlbnQgL2hvbWUvc3R1ZGVudC8ubmFub3JjIC9ob21lL3N0dWRlbnQvLnZpbXJjCgpjYXQgPiAvdXNyL2xvY2FsL2Jpbi9zZXR1cC1rZXlzIDw8J0VPRicKIyEvYmluL2Jhc2gKIyBzZXR1cC1rZXlzIEhPU1QuLi46IG1ha2Ugc3R1ZGVudCdzIFNTSCBrZXkgKGlmIHRoZXJlJ3Mgbm9uZSkgYW5kIGluc3RhbGwgaXQgb24gZWFjaCBIT1NULAojIGxvZ2dpbmcgaW4gb25jZSB3aXRoIHRoZSBwYXNzd29yZCAic3R1ZGVudCIuIFRydXN0cyBlYWNoIGhvc3QncyBrZXkgdGhlIGZpcnN0IHRpbWUsCiMgdW5kZXIgaXRzIG5hbWUgYW5kIGl0cyBhZGRyZXNzLgpzZXQgLWV1byBwaXBlZmFpbApbICQjIC1ndCAwIF0gfHwgeyBlY2hvICJVc2FnZTogc2V0dXAta2V5cyBIT1NULi4uIiA+JjI7IGV4aXQgMjsgfQpbIC1mIH4vLnNzaC9pZF9lZDI1NTE5IF0gfHwgc3NoLWtleWdlbiAtcSAtdCBlZDI1NTE5IC1OICcnIC1mIH4vLnNzaC9pZF9lZDI1NTE5CmZvciBoIGluICIkQCI7IGRvCiAgICBpZiBTU0hQQVNTPXN0dWRlbnQgc3NocGFzcyAtZSBzc2gtY29weS1pZCAtbyBTdHJpY3RIb3N0S2V5Q2hlY2tpbmc9YWNjZXB0LW5ldyAic3R1ZGVudEAkaCIgPiAvZGV2L251bGwgMj4mMTsgdGhlbgogICAgICAgIGVjaG8gIiRoOiBrZXkgaW5zdGFsbGVkIgogICAgICAgICMgYWxzbyB0cnVzdCBpdHMga2V5IHVuZGVyIGl0cyBhZGRyZXNzLCBmb3IgaW52ZW50b3JpZXMgdGhhdCBnaXZlIGFuc2libGVfaG9zdD1BRERSRVNTCiAgICAgICAgaXA9JChnZXRlbnQgaG9zdHMgIiRoIiB8IGF3ayAne3ByaW50ICQxOyBleGl0fScpCiAgICAgICAgWyAtbiAiJGlwIiBdICYmIHNzaC1rZXlzY2FuIC10IGVkMjU1MTkgIiRpcCIgPj4gfi8uc3NoL2tub3duX2hvc3RzIDI+L2Rldi9udWxsCiAgICBlbHNlCiAgICAgICAgZWNobyAiJGg6IEZBSUxFRCAoaXMgaXQgcnVubmluZywgd2l0aCBpdHMgU1NIIHNlcnZlciBzdGFydGVkPykiID4mMgogICAgZmkKZG9uZQpFT0YKY2htb2QgNzU1IC91c3IvbG9jYWwvYmluL3NldHVwLWtleXMK",
+  "ansible-node/Dockerfile": "RlJPTSBkZWJpYW46MTMKCiMgQSBzZXJ2ZXIgZm9yIHRoZSBBbnNpYmxlIGxhYnMgdG8gbWFuYWdlOiBEZWJpYW4gMTMgd2l0aCB3aGF0IEFuc2libGUgbmVlZHMgb24gYSBtYW5hZ2VkIG5vZGUsCiMgUHl0aG9uIDMgYW5kIGFuIFNTSCBzZXJ2ZXIsIGFuZCBsaXR0bGUgZWxzZSAodGhlIGxhYnMgaW5zdGFsbCB0aGUgcmVzdCB3aXRoIEFuc2libGUpLgojIFVzZXIgc3R1ZGVudCAocGFzc3dvcmQgc3R1ZGVudCkgbWF5IHVzZSBzdWRvIHdpdGhvdXQgYSBwYXNzd29yZCwgYXMgYXV0b21hdGlvbiBhY2NvdW50cyBvZnRlbiBkby4KUlVOIGFwdC1nZXQgdXBkYXRlICYmIERFQklBTl9GUk9OVEVORD1ub25pbnRlcmFjdGl2ZSBhcHQtZ2V0IGluc3RhbGwgLXkgLS1uby1pbnN0YWxsLXJlY29tbWVuZHMgXAogICAgICBweXRob24zIHB5dGhvbjMtYXB0IG9wZW5zc2gtc2VydmVyIHN1ZG8gaXByb3V0ZTIgaXB1dGlscy1waW5nIHByb2NwcyBsZXNzIG5hbm8gY3VybCBjYS1jZXJ0aWZpY2F0ZXMgXAogJiYgcm0gLXJmIC92YXIvbGliL2FwdC9saXN0cy8qIFwKICYmIHRvdWNoIC1kIDIwMDAtMDEtMDEgL3Zhci9saWIvYXB0L2xpc3RzICAgICMgdGhlIGxpc3RzIGFyZSBnb25lOiB0ZWxsIEFuc2libGUncyBjYWNoZV92YWxpZF90aW1lIHNvCgpDT1BZIHNldHVwLnNoIC90bXAvc2V0dXAuc2gKUlVOIGJhc2ggL3RtcC9zZXR1cC5zaCAmJiBybSAvdG1wL3NldHVwLnNoCgpVU0VSIHN0dWRlbnQKRU5WIFVTRVI9c3R1ZGVudCBMT0dOQU1FPXN0dWRlbnQKV09SS0RJUiAvaG9tZS9zdHVkZW50CkNNRCBbImJhc2giXQo=",
+  "ansible-node/setup.sh": "IyEvYmluL2Jhc2gKIyBUaGUgbWFuYWdlZCBub2RlcycgdXNlciwgYW5kIFNTSCByZWFkeSB0byBzdGFydCAoZWFjaCBjb250YWluZXIgbWFrZXMgaXRzIG93biBob3N0IGtleXM6CiMgdGhlIGxhYidzIHN0YXJ0dXAgY29tbWFuZHMgcnVuIHNzaC1rZXlnZW4gLUEgYW5kIHN0YXJ0IHNzaGQpLgpzZXQgLWV1byBwaXBlZmFpbAppZCB1YnVudHUgPi9kZXYvbnVsbCAyPiYxICYmIHVzZXJkZWwgLXIgdWJ1bnR1IDI+L2Rldi9udWxsIHx8IHRydWUKdXNlcmFkZCAtbSAtcyAvYmluL2Jhc2ggLXUgMTAwMCAtYyAiU3R1ZGVudCIgc3R1ZGVudAplY2hvIHN0dWRlbnQ6c3R1ZGVudCB8IGNocGFzc3dkCmVjaG8gJ3N0dWRlbnQgQUxMPShBTEwpIE5PUEFTU1dEOiBBTEwnID4gL2V0Yy9zdWRvZXJzLmQvc3R1ZGVudApjaG1vZCA0NDAgL2V0Yy9zdWRvZXJzLmQvc3R1ZGVudApybSAtZiAvZXRjL3NzaC9zc2hfaG9zdF8qCmVjaG8gJ3VtYXNrIDAyMicgPj4gL2V0Yy9iYXNoLmJhc2hyYwo="
+ }
+}

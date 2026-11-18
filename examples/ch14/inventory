@@ -1,0 +1,9 @@
+[loadbalancers]
+lb
+
+[web]
+web1
+web2
+
+[api]
+api1

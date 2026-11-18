@@ -1,0 +1,5 @@
+*.retry
+fleet-report.md
+.vault_pass
+collected/
+README.local.md

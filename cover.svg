@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" font-family="'JetBrains Mono','SFMono-Regular',ui-monospace,monospace">
+<defs><linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d1218"/><stop offset="100%" stop-color="#1b3352"/></linearGradient>
+<linearGradient id="hac" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#b9d3f0"/><stop offset="100%" stop-color="#4f86c6"/></linearGradient>
+<marker id="har" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#83addd"/></marker></defs>
+<rect width="1000" height="560" fill="url(#hbg)"/>
+<g opacity="0.07" stroke="#83addd"><path d="M0 80 H1000 M0 160 H1000 M0 240 H1000 M0 320 H1000 M0 400 H1000 M0 480 H1000"/><path d="M100 0 V560 M200 0 V560 M300 0 V560 M400 0 V560 M500 0 V560 M600 0 V560 M700 0 V560 M800 0 V560 M900 0 V560"/></g>
+<text x="60" y="88" font-size="22" fill="#83addd" letter-spacing="4">CONCISE BOOK ON</text>
+<text x="56" y="168" font-size="84" font-weight="700" fill="url(#hac)">Ansible</text>
+<text x="440" y="168" font-size="24" font-weight="700" fill="#83addd" letter-spacing="3">HANDS-ON EDITION</text>
+<text x="60" y="212" font-size="19" fill="#d5e1ef">automation as code, from first ping to a secure stack</text>
+<rect x="60" y="262" width="330" height="214" rx="12" fill="#151d27" stroke="#2f527a" stroke-width="2"/>
+<text x="80" y="294" font-size="16" fill="#92a6bd">site.yml</text>
+<text x="80" y="326" font-size="16" fill="#d5e1ef">- name: Web servers</text>
+<text x="99" y="350" font-size="16" fill="#d5e1ef">hosts: <tspan fill="#83addd">web</tspan></text>
+<text x="99" y="374" font-size="16" fill="#d5e1ef">become: true</text>
+<text x="99" y="398" font-size="16" fill="#d5e1ef">roles:</text>
+<text x="118" y="422" font-size="16" fill="#d5e1ef">- <tspan fill="#83addd">webserver</tspan></text>
+<text x="80" y="456" font-size="15" fill="#7fd0a8">changed=0  failed=0</text>
+<g stroke="#83addd" stroke-width="2.4" fill="none" marker-end="url(#har)"><path d="M392 360 C 470 360, 480 300, 560 300"/><path d="M392 370 C 480 370, 500 380, 560 380"/><path d="M392 380 C 470 380, 480 460, 560 460"/></g>
+<g font-size="16" font-weight="700">
+<g transform="translate(564 276)"><rect width="150" height="48" rx="8" fill="#16304f" stroke="#4f86c6" stroke-width="2"/><text x="75" y="30" text-anchor="middle" fill="#b9d3f0">lb</text></g>
+<g transform="translate(564 356)"><rect width="150" height="48" rx="8" fill="#16304f" stroke="#4f86c6" stroke-width="2"/><text x="75" y="30" text-anchor="middle" fill="#b9d3f0">web1  web2</text></g>
+<g transform="translate(564 436)"><rect width="150" height="48" rx="8" fill="#16304f" stroke="#4f86c6" stroke-width="2"/><text x="75" y="30" text-anchor="middle" fill="#b9d3f0">api1</text></g>
+</g>
+<g stroke="#5e7187" stroke-width="2" fill="none"><path d="M714 300 L800 300 M714 380 L800 380 M714 460 L800 460 M800 300 V460"/></g>
+<g font-size="14" font-weight="700" fill="#0d1218"><circle cx="860" cy="320" r="26" fill="#5dcaa5"/><text x="860" y="325" text-anchor="middle">r1</text><circle cx="930" cy="410" r="26" fill="#5dcaa5"/><text x="930" y="415" text-anchor="middle">r2</text><circle cx="850" cy="470" r="26" fill="#5dcaa5"/><text x="850" y="475" text-anchor="middle">r3</text></g>
+<g stroke="#5dcaa5" stroke-width="2"><path d="M876 340 L914 390 M904 418 L874 460 M850 444 L858 346"/></g>
+<path d="M800 380 L834 340" stroke="#5e7187" stroke-width="2"/>
+<text x="60" y="530" font-size="15" fill="#92a6bd">Khaled Mahmud · tested on DockerLab · 2026</text>
+</svg>

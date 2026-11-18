@@ -1,0 +1,24 @@
+---
+- name: Today's menu, from the menu server if it's up
+  hosts: web
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Get the menu
+      block:
+        - name: Download it from the menu server
+          ansible.builtin.get_url:
+            url: http://menu.northwind.lab/menu.html
+            dest: "{{ web_root }}/menu.html"
+            timeout: 5
+            mode: "0644"
+      rescue:
+        - name: The menu server is down; publish a fallback page
+          ansible.builtin.copy:
+            dest: "{{ web_root }}/menu.html"
+            content: "<h1>Menu</h1><p>Ask at the counter today.</p>\n"
+            mode: "0644"
+      always:
+        - name: Either way, record what happened
+          ansible.builtin.debug:
+            msg: "{{ inventory_hostname }}: menu {{ 'downloaded' if ansible_failed_task is not defined else 'replaced by the fallback' }}"

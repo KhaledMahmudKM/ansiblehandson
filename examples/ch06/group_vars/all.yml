@@ -1,0 +1,3 @@
+company: Northwind
+admin_email: ops@northwind.lab
+ntp_server: pool.ntp.org

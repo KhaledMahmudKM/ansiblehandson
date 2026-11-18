@@ -1,0 +1,5 @@
+---
+appconfig_name: orders
+appconfig_db_host: localhost
+appconfig_db_user: "{{ appconfig_name }}"
+appconfig_admin_user: appadmin

@@ -1,0 +1,33 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Folder for the backends
+  ansible.builtin.file:
+    path: /etc/nginx/backends
+    state: directory
+    mode: "0755"
+
+- name: One file per web server in the inventory (created once, then left to the rollout)
+  ansible.builtin.copy:
+    dest: /etc/nginx/backends/{{ item }}.conf
+    content: "server {{ item }}:{{ loadbalancer_backend_port }};\n"
+    force: false
+    mode: "0644"
+  loop: "{{ groups[loadbalancer_group] }}"
+  notify: Reload nginx
+
+- name: The balancer's site
+  ansible.builtin.template:
+    src: lb.conf.j2
+    dest: /etc/nginx/sites-available/default
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Start nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started

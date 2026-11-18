@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+upstream app {
+{% for h in groups['web'] %}
+    server {{ hostvars[h]['ansible_facts']['eth0']['ipv4']['address'] }}:80;
+{% endfor %}
+}
+server {
+    listen 80 default_server;
+    location / { proxy_pass http://app; }
+}

@@ -1,0 +1,48 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    update_cache: true
+    cache_valid_time: 3600
+  tags: packages
+
+- name: Site configuration
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: /etc/nginx/sites-available/default
+    mode: "0644"
+  notify: Reload nginx
+  tags: config
+
+- name: Hide the nginx version in error pages
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*#?\s*server_tokens'
+    line: '        server_tokens off;'
+  notify: Reload nginx
+  tags: config
+
+- name: Home page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ webserver_root }}/index.html"
+    mode: "0644"
+  tags: content
+
+- name: Start nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+
+- name: Apply any configuration change now, before testing
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait until the site answers
+  ansible.builtin.uri:
+    url: "http://{{ inventory_hostname }}:{{ webserver_port }}/"
+  register: webserver_page
+  until: webserver_page.status == 200
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+  become: false

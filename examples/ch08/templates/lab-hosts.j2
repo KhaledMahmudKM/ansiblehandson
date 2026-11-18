@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+# Every Northwind server, from the Ansible inventory
+{% for host in groups['all'] | sort %}
+{{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }}  {{ host }}.northwind.lab  {{ host }}
+{% endfor %}

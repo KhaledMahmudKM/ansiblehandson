@@ -1,0 +1,13 @@
+---
+- name: Install SQLite
+  ansible.builtin.apt:
+    name: sqlite3
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Make the data folder
+  ansible.builtin.file:
+    path: "{{ database_data_dir }}"
+    state: directory
+    owner: "{{ database_owner }}"
+    mode: "0750"

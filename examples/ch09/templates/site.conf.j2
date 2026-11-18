@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+server {
+    listen {{ http_port }} default_server;
+    server_name {{ inventory_hostname }}{% for alias in site_aliases %} {{ alias }}{% endfor %};
+    root {{ web_root }};
+    index index.html;
+}

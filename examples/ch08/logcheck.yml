@@ -1,0 +1,21 @@
+---
+- name: Count errors in the application log
+  hosts: web
+  gather_facts: false
+  tasks:
+    - name: A log to check (web2's has errors)
+      ansible.builtin.copy:
+        dest: /tmp/app.log
+        content: "{{ 'INFO started\n' if inventory_hostname == 'web1' else 'INFO started\nERROR disk full\nERROR disk full\n' }}"
+        mode: "0644"
+
+    - name: Count the errors
+      ansible.builtin.command: grep -c ERROR /tmp/app.log
+      register: errors
+      changed_when: false
+      failed_when: errors.rc > 1
+
+    - name: Fail the host if the log has errors
+      ansible.builtin.fail:
+        msg: "{{ errors.stdout }} errors in the log"
+      when: errors.stdout | int > 0

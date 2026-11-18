@@ -1,0 +1,16 @@
+---
+common_role_description: web server
+webserver_site_name: Northwind Coffee
+webserver_aliases:
+  - www.northwind.lab
+  - northwind.lab
+webserver_opening_hours:
+  Monday to Friday: 7:00 to 19:00
+  Saturday: 8:00 to 17:00
+  Sunday: closed
+appconfig_db_host: db1
+appconfig_db_user: orders
+appconfig_db_password: "{{ vault_db_password }}"
+appconfig_api_token: "{{ vault_api_token }}"
+appconfig_admin_password: "{{ vault_admin_password }}"
+appconfig_admin_salt: "{{ vault_admin_salt }}"

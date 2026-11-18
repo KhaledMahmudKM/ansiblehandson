@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+upstream app {
+    include /etc/nginx/backends/*.conf;
+}
+server {
+    listen 80 default_server;
+    location / {
+        proxy_pass http://app;
+        add_header X-Served-By $upstream_addr always;
+    }
+}

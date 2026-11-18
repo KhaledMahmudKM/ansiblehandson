@@ -1,0 +1,3 @@
+---
+loadbalancer_group: web
+loadbalancer_backend_port: 80

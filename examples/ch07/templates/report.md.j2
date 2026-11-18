@@ -1,0 +1,10 @@
+# Northwind fleet report, {{ now(fmt='%Y-%m-%d %H:%M') }}
+
+| Host | Groups | System | CPUs | Memory | Address |
+|---|---|---|---|---|---|
+{% for host in groups['all'] | sort %}
+{% set f = hostvars[host]['ansible_facts'] %}
+| {{ host }} | {{ hostvars[host]['group_names'] | join(', ') }} | {{ f['distribution'] }} {{ f['distribution_version'] }} | {{ f['processor_vcpus'] }} | {{ f['memtotal_mb'] }} MB | {{ f['eth0']['ipv4']['address'] }} |
+{% endfor %}
+
+{{ groups['all'] | length }} hosts.

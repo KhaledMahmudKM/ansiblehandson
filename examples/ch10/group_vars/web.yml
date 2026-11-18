@@ -1,0 +1,10 @@
+---
+common_role_description: web server
+webserver_site_name: Northwind Coffee
+webserver_aliases:
+  - www.northwind.lab
+  - northwind.lab
+webserver_opening_hours:
+  Monday to Friday: 7:00 to 19:00
+  Saturday: 8:00 to 17:00
+  Sunday: closed

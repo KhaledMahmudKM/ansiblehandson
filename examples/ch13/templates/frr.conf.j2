@@ -1,0 +1,24 @@
+! {{ ansible_managed }}
+frr defaults traditional
+hostname {{ inventory_hostname }}
+log syslog informational
+service integrated-vtysh-config
+!
+interface lo
+ ip address {{ router_id }}/32
+ ip ospf area {{ ospf_area }}
+exit
+!
+{% for i in ospf_interfaces %}
+interface {{ i.name }}
+ description link to {{ i.peer }}
+ ip ospf area {{ ospf_area }}
+ ip ospf network point-to-point
+exit
+!
+{% endfor %}
+router ospf
+ ospf router-id {{ router_id }}
+ passive-interface lo
+exit
+!

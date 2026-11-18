@@ -1,0 +1,25 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    update_cache: true
+    cache_valid_time: 3600
+- name: Site configuration
+  ansible.builtin.copy:
+    dest: /etc/nginx/sites-available/default
+    content: |
+      server {
+          listen 80 default_server;
+          root /var/www/html;
+          location = /health { return 200 "OK\n"; }
+          location /api/ { proxy_pass http://{{ groups['api'][0] }}:8080/; }
+      }
+  notify: Reload nginx
+- name: Home page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+- name: Make sure nginx is running
+  ansible.builtin.service:
+    name: nginx
+    state: started

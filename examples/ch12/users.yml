@@ -1,0 +1,18 @@
+---
+- name: The team's accounts, on every server
+  hosts: all
+  become: true
+  tasks:
+    - name: One account per team member
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
+        groups: "{{ item.groups | default([]) }}"
+        append: true
+        shell: /bin/bash
+        state: "{{ item.state | default('present') }}"
+        remove: true
+      loop: "{{ team }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.only_on is not defined or item.only_on in group_names

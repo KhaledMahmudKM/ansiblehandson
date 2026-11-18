@@ -1,0 +1,4 @@
+---
+ospf_area: 0
+ospf_mgmt_interface: eth0      # never run OSPF on the management network
+frr_daemons: [ospfd]

@@ -1,0 +1,3 @@
+firewall_allow:
+  - port: 8080
+    hosts: "{{ groups['web'] }}"
