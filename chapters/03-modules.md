@@ -952,3 +952,63 @@ ansible db1 -b -m service -a 'name=cron state=stopped'
 - **Idempotency**: a module checks first and changes only what differs, so results are **ok** or **changed**, and running again is safe.
 - `--check` previews changes without making them; `--diff` shows them. Together they detect **drift**.
 - Everyday modules: `copy`, `file`, `apt`, `user`, `group`, `lineinfile`, `service`, `stat`, `fetch`.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-3-modules-and-idempotency).
+
+**1. How do the command and shell modules differ?**
+
+- A. command runs a program without a shell; shell runs the line in /bin/sh, so pipes work
+- B. command is faster
+- C. shell is idempotent
+- D. command needs become
+
+**2. You run the same copy task twice. What does the second run report?**
+
+- A. CHANGED
+- B. FAILED
+- C. SUCCESS / ok, with changed false
+- D. SKIPPED
+
+**3. What do --check and --diff do together?**
+
+- A. Apply changes and print them
+- B. Undo the last run
+- C. Check SSH connectivity
+- D. Report what would change, with diffs, without changing anything
+
+**4. Which file module state removes a path?**
+
+- A. state=directory
+- B. state=absent
+- C. state=touch
+- D. state=link
+
+**5. Why add cache_valid_time to an apt task with update_cache?**
+
+- A. To pin package versions
+- B. To clean old packages
+- C. To run apt update only when the cache is older than that many seconds, keeping reruns fast
+- D. To install recommended packages
+
+**6. What happens with user: name=deploy groups=sudo without append=true?**
+
+- A. The group list replaces the user's current extra groups
+- B. sudo is added to the existing groups
+- C. The task fails
+- D. The user is removed from sudo
+
+**7. What does lineinfile do when its regexp matches no line?**
+
+- A. Adds the line at the end of the file
+- B. Fails
+- C. Replaces the first line
+- D. Does nothing
+
+**8. Which module should you use to check whether a file exists, without changing it?**
+
+- A. file
+- B. command: test -f
+- C. stat
+- D. copy

@@ -1491,3 +1491,63 @@ Tools such as **AWX** (and its commercial version, Ansible Automation Platform),
 - Order matters (allow before `DROP`); `validate` protects sshd and sudoers; handlers restart only what changed.
 - A second run with `changed=0` proves idempotency; a **verification playbook** proves the result, including what must fail.
 - Break, verify, repair, verify: the playbook is the truth. A pipeline runs it all on every change.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-14-final-project-a-secure-web-stack).
+
+**1. Which hosts may connect to api1 on port 8080?**
+
+- A. Anyone
+- B. lb only
+- C. control only
+- D. web1 and web2 only
+
+**2. Why does the firewall role set the DROP policy last?**
+
+- A. iptables requires it
+- B. Setting it first would cut Ansible's own SSH connection halfway through the run
+- C. DROP must follow ACCEPT for speed
+- D. It makes the role idempotent
+
+**3. How does api1's firewall learn the web servers' addresses?**
+
+- A. They are typed into the role
+- B. From DNS
+- C. From the load balancer
+- D. From the web servers' facts, looked up for each host in firewall_allow
+
+**4. Why does the firewall role gather some facts with delegate_to and delegate_facts: true?**
+
+- A. With --limit, other hosts' facts would be missing; this gathers them and stores them as those hosts' facts
+- B. To speed up the run
+- C. To skip fact gathering on the current host
+- D. To encrypt facts
+
+**5. Why does the hardening role write its own file in sshd_config.d instead of editing sshd_config?**
+
+- A. sshd_config is read-only
+- B. To avoid validate
+- C. It owns a whole file, leaving the package's file alone, and the first value set wins
+- D. Drop-in files are faster
+
+**6. What does the second run of site.yml reporting changed=0 show?**
+
+- A. Nothing was configured
+- B. The firewall is off
+- C. Facts failed
+- D. The whole stack is idempotent, so it can run every night to undo drift
+
+**7. Why does verify.yml test that some connections fail?**
+
+- A. To slow the run
+- B. A firewall that allows everything would pass every positive test; blocked ports must be proved blocked
+- C. Failures are easier to test
+- D. To check DNS
+
+**8. After someone tampers with web2, what restores it?**
+
+- A. Rebuilding the server by hand
+- B. Restarting the container
+- C. site.yml --limit web2, then verify.yml to prove the repair
+- D. Running verify.yml twice

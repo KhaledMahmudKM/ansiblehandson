@@ -1028,3 +1028,63 @@ A play can also ask for a value when it runs, with `vars_prompt`; useful for a r
 - **Facts** describe each host (`ansible_facts['...']`); in DockerLab, use `eth0` for the lab address.
 - `register` stores a task's result; `changed_when: false` keeps read-only commands honest.
 - **Magic variables** (`inventory_hostname`, `group_names`, `groups`, `hostvars`) give a host a view of the whole inventory, provided the other hosts' facts were gathered.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-6-variables-and-facts).
+
+**1. Why must dest: "{{ web_root }}/index.html" be quoted?**
+
+- A. For security
+- B. Paths must always be quoted
+- C. Jinja2 requires quotes
+- D. A value starting with {{ would otherwise be read by YAML as a dictionary
+
+**2. Which variables always win over all others?**
+
+- A. Role defaults
+- B. Extra variables given with -e
+- C. host_vars
+- D. Facts
+
+**3. In DockerLab, which fact gives a node's lab address?**
+
+- A. ansible_facts['default_ipv4']['address']
+- B. ansible_facts['hostname']
+- C. inventory_hostname
+- D. ansible_facts['eth0']['ipv4']['address']
+
+**4. What does register: disk keep?**
+
+- A. The task's whole result: stdout, stdout_lines, rc, changed, failed and more
+- B. Only the command's output
+- C. The disk's facts
+- D. Nothing until set_fact runs
+
+**5. Why add changed_when: false to a command that only reads?**
+
+- A. To skip it in check mode
+- B. To hide its output
+- C. So the recap stays honest: otherwise the task always counts as changed
+- D. To run it only once
+
+**6. What does hostvars['db1'] give a task running on web1?**
+
+- A. db1's SSH key
+- B. A connection to db1
+- C. db1's inventory groups only
+- D. db1's variables and facts
+
+**7. Why does whoknows.yml start with a play on all hosts that has no tasks?**
+
+- A. To test SSH
+- B. To gather every host's facts, so hostvars['db1'] has them later
+- C. To reset variables
+- D. Plays need a header
+
+**8. Which name is a bad choice for a variable?**
+
+- A. http_port
+- B. web_root
+- C. http-port
+- D. site_name

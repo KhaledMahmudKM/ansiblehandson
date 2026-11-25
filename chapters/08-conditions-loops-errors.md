@@ -1082,3 +1082,63 @@ A failed assertion stops the host with a clear message, which is far better than
 - `failed_when` and `changed_when` define what failure and change mean; `fail` stops a host on purpose; `ignore_errors` carries on.
 - `block`, `rescue` and `always` handle failures like try, catch and finally.
 - `assert` checks assumptions before anything changes.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-8-conditions-loops-and-errors).
+
+**1. How is a when condition written?**
+
+- A. Inside {{ }}
+- B. As a Jinja2 expression without braces
+- C. As a shell test
+- D. As a regular expression
+
+**2. In users.yml, the team loop has when: item.only_on is not defined or item.only_on in group_names. When is it evaluated?**
+
+- A. Once per play
+- B. Once per host
+- C. For each item on each host
+- D. Only for the first item
+
+**3. Dave has state: absent in the team list and someone recreated his account by hand on web1. What does the next run do?**
+
+- A. Removes dave again, with his home folder (remove: true)
+- B. Nothing; the account exists
+- C. Fails
+- D. Asks for confirmation
+
+**4. What does dict2items do?**
+
+- A. Turns a dictionary into a list of key and value items, for loop
+- B. Turns a list into a dictionary
+- C. Sorts a dictionary
+- D. Merges two dictionaries
+
+**5. Why install several packages with one apt task and a list rather than a loop?**
+
+- A. Loops don't work with apt
+- B. Lists install newer versions
+- C. One transaction is faster than calling apt once per package
+- D. Loops skip dependencies
+
+**6. grep -c ERROR exits with 1 when it finds no errors. How do you stop Ansible treating that as a failure?**
+
+- A. ignore_errors: true
+- B. failed_when: errors.rc > 1
+- C. changed_when: false
+- D. until: errors.rc == 0
+
+**7. A block's task fails and its rescue tasks succeed. How does the recap count it?**
+
+- A. failed=1
+- B. ignored=1
+- C. skipped=1
+- D. rescued=1 and failed=0
+
+**8. What does a preflight assert protect against?**
+
+- A. Slow runs
+- B. Running on unsupported hosts or invalid settings, failing before anything changes
+- C. SSH failures
+- D. Duplicate tasks

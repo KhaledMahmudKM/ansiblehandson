@@ -914,3 +914,63 @@ Vault keeps secrets in the project, encrypted. Larger organizations often keep t
 - Give the password with `--ask-vault-pass` or a `vault_password_file` kept outside the project.
 - Protect the output too: `no_log: true` on tasks that handle secrets, and deployed files with tight permissions.
 - `password_hash` with a fixed salt from the vault creates account passwords idempotently.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-11-vault-and-secrets).
+
+**1. Why are secrets in plain group_vars a problem even if the repository is private?**
+
+- A. They spread to every clone, backup and screen share, and Git keeps them in history
+- B. Ansible can't read them
+- C. They slow playbooks down
+- D. They break idempotency
+
+**2. In the vars.yml / vault.yml convention, what does vars.yml contain?**
+
+- A. The encrypted values
+- B. The vault password
+- C. Ordinary values plus references such as appconfig_db_password: "{{ vault_db_password }}"
+- D. Nothing
+
+**3. Which cipher does Ansible Vault use?**
+
+- A. DES
+- B. ROT13
+- C. Base64
+- D. AES-256
+
+**4. Which command changes an encrypted file in your editor without writing plain text to disk?**
+
+- A. ansible-vault decrypt
+- B. ansible-vault edit
+- C. ansible-vault view
+- D. ansible-vault rekey
+
+**5. Where must the vault password file never be?**
+
+- A. In your home folder with mode 600
+- B. In a password manager
+- C. Inside the project, where it would be committed
+- D. Behind a script
+
+**6. What does no_log: true do?**
+
+- A. Hides the task's arguments and results from the output
+- B. Encrypts the task
+- C. Disables logging on the host
+- D. Skips the task in check mode
+
+**7. Why does the appconfig role use a fixed salt with password_hash?**
+
+- A. A random salt would give a new hash every run, so the user task would always report changed
+- B. For stronger hashes
+- C. The user module requires it
+- D. To allow decryption
+
+**8. Someone who knew the vault password leaves. What should you do?**
+
+- A. Nothing; the files are encrypted
+- B. Delete the vault
+- C. Rekey the vault and change the secrets themselves
+- D. Only change ~/.vault_pass

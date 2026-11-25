@@ -1215,3 +1215,63 @@ Within OSPF's dead interval (40 seconds by default; less with point-to-point tun
 - FRR's `daemons` file selects daemons; `frr.conf` holds the configuration; `vtysh --dryrun` validates it.
 - Keep management **out of band** and out of the routing protocol.
 - Verify from **structured output** (`show ... json` with `from_json`), wait for convergence with `until`, and test end to end with loopback pings.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-13-network-automation-with-frr).
+
+**1. Why do the routers' eth0 interfaces sit on a separate management network?**
+
+- A. So a routing mistake cannot cut off Ansible's own access: management is out of band
+- B. For faster OSPF
+- C. eth0 can't carry routes
+- D. To save addresses
+
+**2. Why does each router have a /32 address on its loopback?**
+
+- A. Loopbacks are required by SSH
+- B. It replaces eth0
+- C. It stays up whatever happens to the links, and doubles as the OSPF router ID
+- D. It is the management address
+
+**3. How does Ansible manage the FRR routers in this chapter?**
+
+- A. Through network_cli and vendor modules
+- B. Like servers: SSH and Python, apt, lineinfile, a template and the service module
+- C. Through NETCONF
+- D. Through a controller's REST API
+
+**4. Which two files does Ansible manage for FRR?**
+
+- A. /etc/hosts and /etc/resolv.conf
+- B. sshd_config and sudoers
+- C. /etc/network/interfaces only
+- D. /etc/frr/daemons and /etc/frr/frr.conf
+
+**5. What does validate: /usr/bin/vtysh --dryrun --inputfile %s protect against?**
+
+- A. Slow convergence
+- B. A typo in frr.conf replacing the running configuration
+- C. Lost SSH keys
+- D. Duplicate router IDs
+
+**6. Why does verify.yml use until with retries for the OSPF neighbour check?**
+
+- A. vtysh is slow to start
+- B. JSON parsing can fail
+- C. To retry SSH
+- D. OSPF needs time to converge; neighbours must reach Full
+
+**7. Where does verify.yml get the number of neighbours each router should have?**
+
+- A. From the router's own data: the length of ospf_interfaces
+- B. From a hard-coded number
+- C. From the spine
+- D. From DNS
+
+**8. r1's eth1 link to r2 goes down. What does OSPF do?**
+
+- A. Nothing until it comes back
+- B. Drops all routes
+- C. Recomputes routes: r1 reaches 2.2.2.2 via r3 at a higher cost
+- D. Restarts FRR

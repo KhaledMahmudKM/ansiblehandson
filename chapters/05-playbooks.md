@@ -903,3 +903,63 @@ ansible-playbook site.yml --limit web1 -v
 - A second run with `changed=0` proves the playbook is **idempotent**.
 - Look before you leap: `--syntax-check`, `--list-tasks`, `--check --diff`, `--limit` one host, then all.
 - A failed task stops that host's play; the other hosts continue.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-5-playbooks).
+
+**1. What does a playbook contain?**
+
+- A. A list of plays; each play targets hosts and lists tasks, each calling one module
+- B. A list of hosts
+- C. A list of modules only
+- D. An inventory and variables
+
+**2. Why should a file mode such as 0750 be quoted in YAML?**
+
+- A. Quotes make it secret
+- B. Modes must be strings in JSON
+- C. Unquoted, YAML reads it as a number, which can turn into a different mode
+- D. Ansible ignores unquoted modes
+
+**3. In the default linear strategy, how are tasks run?**
+
+- A. Each host runs all its tasks, then the next host starts
+- B. Each task runs on all hosts of the play before the next task starts
+- C. Tasks run in random order
+- D. All tasks run at once on all hosts
+
+**4. A playbook's second run reports changed=0 on every host. What does that show?**
+
+- A. Nothing ran
+- B. Facts were not gathered
+- C. The inventory is empty
+- D. The playbook is idempotent: the servers already match the description
+
+**5. What does --syntax-check do?**
+
+- A. Runs the playbook in check mode
+- B. Parses the playbook without connecting to any host
+- C. Lints style
+- D. Lists hosts
+
+**6. What is the safest way to apply a changed playbook to production?**
+
+- A. Run it on all hosts at once
+- B. Run it with -vvvv
+- C. Edit the servers by hand first
+- D. Preview with --check --diff, apply to one host with --limit, look, then apply to all
+
+**7. A task fails on db1. What happens?**
+
+- A. db1's remaining tasks are skipped; other hosts carry on
+- B. The whole playbook stops on all hosts
+- C. The task is retried forever
+- D. Ansible rolls back db1
+
+**8. What does content: | introduce in a copy task?**
+
+- A. A folded string joined into one line
+- B. A list
+- C. A literal block: the indented lines below are kept exactly, newlines included
+- D. A comment

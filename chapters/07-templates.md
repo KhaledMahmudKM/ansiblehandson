@@ -1067,3 +1067,63 @@ The broken rule never reached `/etc/sudoers.d`, where it would have broken `sudo
 - Ansible's templates use `trim_blocks`; `{%-` and `-%}` strip more whitespace.
 - Templates can loop over `groups` and read `hostvars` to build files about the whole fleet, as long as every host's facts were gathered.
 - `delegate_to: localhost` with `run_once` writes a file on control; `validate` checks a file before it replaces the old one.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-7-templates).
+
+**1. Where does the template module read its .j2 file?**
+
+- A. On the control node
+- B. On the managed host
+- C. From a web server
+- D. From the inventory
+
+**2. What is the difference between {{ }} and {% %}?**
+
+- A. None
+- B. {{ }} is for comments
+- C. {{ }} prints an expression; {% %} holds logic such as if, for and set
+- D. {% %} prints values
+
+**3. How do you loop over a dictionary such as opening_hours in a template?**
+
+- A. {% for d in opening_hours %}
+- B. {{ opening_hours | loop }}
+- C. {% each opening_hours %}
+- D. {% for day, hours in opening_hours.items() %}
+
+**4. What does Jinja2's trim_blocks, enabled by Ansible, do?**
+
+- A. Removes comments
+- B. Removes the newline right after a {% %} block tag
+- C. Trims spaces from variables
+- D. Shortens long lines
+
+**5. Why does a template reading hostvars[host]['ansible_facts'] for all hosts fail with --limit web1?**
+
+- A. --limit disables templates
+- B. hostvars is only available in roles
+- C. The other hosts' facts were not gathered in this run
+- D. Templates can't read facts
+
+**6. What do delegate_to: localhost and run_once: true do together?**
+
+- A. Run the task once, on control, with the first host's variables
+- B. Run the task on every host twice
+- C. Skip the task
+- D. Run on all hosts in parallel
+
+**7. What does validate: /usr/sbin/visudo -cf %s do on a copy task?**
+
+- A. Checks the new file before it replaces the old one; on failure the real file is untouched
+- B. Formats the file
+- C. Encrypts the file
+- D. Restarts sudo
+
+**8. Where should the opening hours of the site live?**
+
+- A. Hard-coded in the template
+- B. In the inventory file
+- C. As data in group_vars, with the template only describing the form
+- D. In ansible.cfg

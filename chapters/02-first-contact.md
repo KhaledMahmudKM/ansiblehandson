@@ -1032,3 +1032,63 @@ Read the whole output without the `grep` to see the story of Chapter 1: SSH to t
 - **Host patterns** select hosts like sets (`:` union, `:&` intersection, `:!` exclusion); `--limit` narrows a run.
 - **Forks** set how many hosts run in parallel (5 by default).
 - The `setup` module gathers **facts**; `-b` (**become**) runs a module as root through sudo.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-2-first-contact).
+
+**1. Why does Ansible need key-based SSH login?**
+
+- A. Passwords are not supported by SSH
+- B. Keys make modules run faster
+- C. Keys install Python
+- D. It logs in to every host many times per run, so typing passwords is impractical
+
+**2. Which file on a managed node lists the public keys allowed to log in?**
+
+- A. ~/.ssh/id_ed25519
+- B. ~/.ssh/authorized_keys
+- C. ~/.ssh/known_hosts
+- D. /etc/ssh/sshd_config
+
+**3. Which groups exist in every inventory, even if not written?**
+
+- A. web and db
+- B. control and managed
+- C. production and staging
+- D. all and ungrouped
+
+**4. What does a SUCCESS from the ping module prove?**
+
+- A. Name resolution, SSH, the key and Python on the host all work
+- B. ICMP reaches the host
+- C. The host has internet access
+- D. The host runs a web server
+
+**5. Without -m, which module does the ansible command use?**
+
+- A. shell
+- B. ping
+- C. command
+- D. raw
+
+**6. Which pattern selects every host except those in db?**
+
+- A. db:!all
+- B. all:&db
+- C. !db:all
+- D. all:!db
+
+**7. What do forks control?**
+
+- A. How many tasks run per host
+- B. How many hosts Ansible works on in parallel (default 5)
+- C. How many SSH keys are used
+- D. How many retries a task gets
+
+**8. What does -b (--become) do?**
+
+- A. Runs the command in the background
+- B. Skips the inventory
+- C. Runs the module as another user, root by default, through sudo
+- D. Runs on control only

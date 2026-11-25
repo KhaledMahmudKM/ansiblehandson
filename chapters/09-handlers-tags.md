@@ -906,3 +906,63 @@ Tags are a convenience, not a design. If you need a tag to make a playbook safe,
 - `listen` lets several handlers answer one topic: check the configuration, then reload.
 - `meta: flush_handlers` runs pending handlers immediately; `--force-handlers` runs them even after a failure, so files and services never disagree.
 - **Tags** select tasks: `--tags`, `--skip-tags`, `--list-tags`; `always` and `never` are special.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-9-handlers-and-tags).
+
+**1. When does a notified handler run by default?**
+
+- A. Once, at the end of the play, only if a notifying task changed something
+- B. Immediately after the notifying task
+- C. At the start of the next play
+- D. Every run
+
+**2. web2's site configuration did not change on this run. What happens to nginx on web2?**
+
+- A. It is reloaded anyway
+- B. It is restarted
+- C. Nothing: no change, no notification, no reload
+- D. It is stopped
+
+**3. How do reloaded and restarted differ for nginx?**
+
+- A. They are the same
+- B. Reload rereads the configuration gracefully with the same master PID; restart stops and starts, dropping connections
+- C. Restart is gentler
+- D. Reload changes the PID
+
+**4. What does listen let handlers do?**
+
+- A. Listen on a network port
+- B. Run in parallel
+- C. Run without being notified
+- D. Answer one notification topic with several handlers, in order
+
+**5. Why does the web play use meta: flush_handlers before checking the site?**
+
+- A. To clear the handler queue
+- B. So a changed configuration is applied before the check, instead of at the end of the play
+- C. To skip handlers
+- D. To restart all services
+
+**6. A task changes a configuration file, then a later task fails. What is the risk?**
+
+- A. The file is reverted
+- B. The handler runs twice
+- C. Nothing
+- D. The handler never runs: the file and the running service disagree, and the next run won't notice
+
+**7. ansible-playbook site.yml --tags content runs which tasks?**
+
+- A. Tasks tagged content, plus those tagged always
+- B. Only tasks tagged content
+- C. All tasks except content
+- D. Only tasks tagged always
+
+**8. What does the special tag never do?**
+
+- A. Disables a task permanently
+- B. Hides a task from --list-tasks
+- C. Runs a task only when one of its other tags is asked for by name
+- D. Runs a task last

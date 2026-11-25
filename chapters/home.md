@@ -45,7 +45,7 @@ The book is designed to be read with **DockerLab**, a Docker-based lab platform.
 
 **Part IV, Orchestration.** Rolling updates with no downtime; network automation with FRR and OSPF; the final project, a secure web stack.
 
-The **Appendix** has a quick reference and a **Glossary**.
+Each chapter ends with **Check your understanding**, eight multiple-choice questions. The **Appendix** has a quick reference, a **Glossary**, and **Answers to Chapter Questions** with every answer and a short explanation.
 
 ---
 

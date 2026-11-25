@@ -961,3 +961,63 @@ northwind/
 - Variables live in `group_vars/` and `host_vars/`; the more specific level wins.
 - `ansible-inventory --graph`, `--host` and `--list` show the inventory as Ansible sees it.
 - `ansible_*` variables control the connection. **Dynamic inventories** build the host list from a live source.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-4-inventory-and-configuration).
+
+**1. Which ansible.cfg does Ansible read when you run it in ~/northwind, which has its own ansible.cfg, and no ANSIBLE_CONFIG is set?**
+
+- A. /etc/ansible/ansible.cfg
+- B. ./ansible.cfg, in the project folder
+- C. ~/.ansible.cfg
+- D. All of them, merged
+
+**2. What does ansible-config dump --only-changed show?**
+
+- A. Every setting
+- B. Changed files in the project
+- C. Settings that differ from the defaults, and where each came from
+- D. The inventory
+
+**3. What does [linux:children] in an INI inventory create?**
+
+- A. A group whose members are other groups
+- B. Hosts named linux
+- C. A host variable
+- D. A dynamic inventory
+
+**4. Which pattern selects the web servers that are also in production?**
+
+- A. web:&production
+- B. web:production
+- C. web:!production
+- D. production:!web
+
+**5. web2 is in groups web and staging, and has host_vars/web2.yml. Which value of site_name wins if all three set it?**
+
+- A. group_vars/web.yml
+- B. group_vars/staging.yml
+- C. host_vars/web2.yml
+- D. group_vars/all.yml
+
+**6. What does ansible_host=10.0.0.21 in an inventory line do?**
+
+- A. Renames the host
+- B. Gives the address to connect to, keeping the inventory name
+- C. Sets the SSH port
+- D. Adds the host to a group
+
+**7. What does web[1:2] mean in an inventory?**
+
+- A. Host web with ports 1 to 2
+- B. Two groups named web
+- C. A list variable
+- D. Hosts web1 and web2
+
+**8. What is a dynamic inventory?**
+
+- A. An inventory that changes every second
+- B. A plugin or script that builds the host list at run time from a source such as a cloud API
+- C. An inventory in YAML
+- D. An inventory with variables

@@ -1134,3 +1134,63 @@ ansible-playbook rollout.yml -e webserver_app_version=3.0
 - Watching from the users' side proves zero downtime: every request answered.
 - A failed check stops the rollout, leaves the bad server out of the balancer, and the untouched servers keep serving.
 - Record the deployed version in Git, not only on the command line.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-12-rolling-updates).
+
+**1. Why does the loadbalancer role write one backend file per web server?**
+
+- A. nginx requires it
+- B. So the rollout can take out exactly one server by changing only its own file
+- C. To use less memory
+- D. To balance by IP
+
+**2. Why is the load balancer's group called loadbalancers rather than lb?**
+
+- A. lb is a reserved word
+- B. Group names need a plural
+- C. A group and a host with the same name confuse Ansible
+- D. nginx needs it
+
+**3. What does serial: 1 do?**
+
+- A. Runs the whole play on one host at a time
+- B. Runs one task at a time
+- C. Allows one failure
+- D. Uses one fork
+
+**4. What does max_fail_percentage: 0 do in the rollout?**
+
+- A. Stops the whole rollout as soon as any host in a batch fails
+- B. Retries failures forever
+- C. Ignores failures
+- D. Rolls back automatically
+
+**5. In pre_tasks, a task has delegate_to: lb while the play's current host is web2. Where does it run, and with whose variables?**
+
+- A. On web2, with lb's variables
+- B. On control, with lb's variables
+- C. On lb, with web2's variables
+- D. On lb, with lb's variables
+
+**6. What proved the rollout caused no downtime?**
+
+- A. The playbook recap
+- B. A background loop requesting the page through lb, which got 200 for every request
+- C. nginx logs
+- D. The health check alone
+
+**7. web2 fails its health check during a rollout. What state is it left in?**
+
+- A. Back in the load balancer
+- B. Rolled back to the old version
+- C. Deleted
+- D. Marked down in the load balancer, because its post_tasks never ran
+
+**8. What does serial: [1, "100%"] give you?**
+
+- A. One server at a time
+- B. A canary: one server first, then all the rest at once
+- C. Half the servers
+- D. No batching

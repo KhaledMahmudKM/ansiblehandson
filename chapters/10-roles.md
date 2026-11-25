@@ -1164,3 +1164,63 @@ Northwind's project passes the strictest profile, because every chapter followed
 - Use roles with `roles:`, `import_role` (static) or `include_role` (dynamic); dependencies in `meta/main.yml` run first.
 - **Collections** (`namespace.collection`) ship modules, roles and plugins; list them in `requirements.yml`.
 - `ansible-lint` checks a project against good practice; aim for the `production` profile.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-10-roles-and-collections).
+
+**1. Where does a role keep the settings its users are meant to change?**
+
+- A. vars/main.yml
+- B. meta/main.yml
+- C. tasks/main.yml
+- D. defaults/main.yml
+
+**2. Why prefix a role's variables, as in webserver_port?**
+
+- A. Ansible requires it
+- B. So variables from different roles never clash; ansible-lint checks it
+- C. It makes them encrypted
+- D. It makes them faster
+
+**3. A task in a role says src: site.conf.j2. Where does Ansible look for it?**
+
+- A. The project's templates/ folder
+- B. The current directory
+- C. /etc/ansible/templates
+- D. The role's own templates/ folder
+
+**4. How did web2 get a different site name and port without changing the webserver role?**
+
+- A. Through host_vars/web2.yml, which overrides the role defaults
+- B. By editing the role's defaults
+- C. With a second role
+- D. With tags
+
+**5. The common role's banner mentions the web port. Why does it write webserver_port | default(80)?**
+
+- A. Port 80 is required
+- B. Templates can't read role variables
+- C. webserver's defaults are loaded only in plays that use the webserver role
+- D. To avoid quoting
+
+**6. How does include_role differ from import_role?**
+
+- A. They are identical
+- B. import_role runs only once
+- C. include_role cannot pass variables
+- D. include_role is dynamic, decided at run time, so it works in loops and under when; import_role is static
+
+**7. What is a collection?**
+
+- A. A group of hosts
+- B. A distribution format, namespace.collection, for modules, roles and plugins
+- C. A folder of playbooks
+- D. A set of tags
+
+**8. What does ansible-lint's production profile indicate?**
+
+- A. The project runs in production
+- B. Linting is disabled
+- C. The project passes the most demanding set of good-practice rules
+- D. Only syntax was checked

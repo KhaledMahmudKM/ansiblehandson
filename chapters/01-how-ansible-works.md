@@ -1066,3 +1066,63 @@ The project as it stands at the end of each chapter is in the [`examples/` folde
 - **Idempotency**: tasks check before changing, so a playbook can run again and again safely, and reports only real changes.
 - The building blocks nest: modules in tasks, tasks in plays, plays in playbooks, all organized into roles and shared as collections, with an inventory saying where they run.
 - The book's running story, Northwind, grows chapter by chapter in one project, `~/northwind`, on DockerLab.
+
+## Check your understanding
+
+Choose the best answer for each question, then check your answers in [Answers to Chapter Questions](answers.md#chapter-1-how-ansible-works).
+
+**1. What is configuration drift?**
+
+- A. Servers slowly becoming different through manual changes
+- B. Ansible versions differing between control nodes
+- C. Network latency between servers
+- D. A YAML indentation error
+
+**2. What does agentless mean for Ansible?**
+
+- A. Ansible runs without a control node
+- B. Ansible needs no inventory
+- C. Nothing is installed on managed nodes; Ansible uses SSH and the node's Python
+- D. Playbooks run without modules
+
+**3. What does a managed node need for Ansible to work?**
+
+- A. Ansible installed
+- B. An SSH server, Python 3 and an account Ansible can log in to
+- C. A Puppet agent
+- D. A web server
+
+**4. For each task on each host, what does Ansible copy to the host?**
+
+- A. The whole playbook
+- B. The inventory
+- C. An agent that stays installed
+- D. The module, packed with its arguments as one Python file (AnsiballZ)
+
+**5. What is idempotency?**
+
+- A. Running tasks in parallel
+- B. Running an operation again changes nothing that is already in the desired state
+- C. Encrypting secrets
+- D. Running tasks in a fixed order
+
+**6. Which tool is typically used with Ansible to create cloud infrastructure, while Ansible configures it?**
+
+- A. Puppet
+- B. Chef
+- C. Salt
+- D. Terraform
+
+**7. What does the ansible package add on top of ansible-core?**
+
+- A. A curated set of collections such as community.general and ansible.posix
+- B. A web interface
+- C. An agent for managed nodes
+- D. A YAML editor
+
+**8. In DockerLab, how does the service module start services in the lab containers?**
+
+- A. Through systemd
+- B. It cannot start services
+- C. It falls back to the service command and init scripts, because the containers have no systemd
+- D. Through Docker restart policies
